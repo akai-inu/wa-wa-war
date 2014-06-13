@@ -10,6 +10,7 @@ module.exports = (grunt) ->
 			srcClientLib: '<%= path.srcClient %>/lib'
 			srcPublic: '<%= path.src %>/public'
 			srcPublicVendor: '<%= path.srcPublic %>/vendor'
+			srcPublicImg: '<%= path.srcPublic %>/img'
 			srcServer: '<%= path.src %>/server'
 			srcServerMst: '<%= path.srcServer %>/mst'
 			srcServerLib: '<%= path.srcServer %>/lib'
@@ -17,12 +18,14 @@ module.exports = (grunt) ->
 
 			devPublic: '<%= path.development %>/public'
 			devPublicVendor: '<%= path.devPublic %>/vendor'
+			devPublicImg: '<%= path.devPublic %>/img'
 			devServer: '<%= path.development %>/server'
 			devServerMst: '<%= path.devServer %>/mst'
 			devServerLib: '<%= path.devServer %>/lib'
 
 			relPublic: '<%= path.release %>/public'
 			relPublicVendor: '<%= path.relPublic %>/vendor'
+			relPublicImg: '<%= path.relPublic %>/img'
 			relServer: '<%= path.release %>/server'
 			relServerMSt: '<%= path.relServer %>/mst'
 			relServerLib: '<%= path.relServer %>/lib'
@@ -106,6 +109,21 @@ module.exports = (grunt) ->
 					dest: '<%= path.relPublicVendor %>'
 				]
 
+			devImg: # imgフォルダをdevにコピー
+				files: [
+					expand: true
+					cwd: '<%= path.srcPublicImg %>'
+					src: '**'
+					dest: '<%= path.devPublicImg %>'
+				]
+			relImg: # imgフォルダをrelにコピー
+				files: [
+					expand: true
+					cwd: '<%= path.devPublicImg %>'
+					src: '**'
+					dest: '<%= path.relPublicImg %>'
+				]
+
 		jade:
 			devPublic: # jadeファイルをdevにコピー
 				options:
@@ -169,6 +187,7 @@ module.exports = (grunt) ->
 		'coffee:devClient'
 		'jade:devPublic'
 		'copy:devVendor'
+		'copy:devImg'
 		'cssmin:devPublic'
 	]
 
@@ -203,6 +222,7 @@ module.exports = (grunt) ->
 		'copy:relServer'
 		'copy:relMst'
 		'copy:relVendor'
+		'copy:relImg'
 		'jade:relPublic'
 		'cssmin:relPublic'
 	]

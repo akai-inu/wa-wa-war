@@ -11,6 +11,9 @@ serverMain = (req, res) ->
 			[ /\.js$/, 'text/javascript' ]
 			[ /\.html$/, 'text/html' ]
 			[ /\.css$/, 'text/css' ]
+			[ /\.png$/, 'image/png' ]
+			[ /\.(jpg|jpeg)$/, 'image/jpg' ]
+			[ /\.gif$/, 'image/gif' ]
 		]
 		for f in fileType
 			if fileName.match f[0]
