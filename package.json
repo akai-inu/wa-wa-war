@@ -1,0 +1,32 @@
+{
+  "name": "wa-wa-war",
+  "version": "0.0.0",
+  "description": "2D Online War game",
+  "scripts": {
+    "start": "NODE_ENV=release node release/server/app.js",
+    "test": "grunt test && NODE_ENV=development node development/server/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/akai-inu/wa-wa-war.git"
+  },
+  "author": "akai-inu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/akai-inu/wa-wa-war/issues"
+  },
+  "devDependencies": {
+    "grunt": "*",
+    "grunt-contrib-clean": "*",
+    "grunt-contrib-coffee": "*",
+    "grunt-contrib-copy": "*",
+    "grunt-contrib-cssmin": "*",
+    "grunt-contrib-jade": "*",
+    "grunt-contrib-uglify": "*",
+    "grunt-contrib-watch": "*",
+    "grunt-newer": "*"
+  },
+  "dependencies": {
+    "express": "~4.4.3"
+  }
+}
