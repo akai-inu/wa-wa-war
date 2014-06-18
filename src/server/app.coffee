@@ -1,6 +1,9 @@
-constants = require './lib/constants.js'
+util = require 'util'
 http = require 'http'
 fs = require 'fs'
+constants = require './lib/constants'
+wwwar = require './lib/wwwar/Core'
+Connector = require './lib/Connector'
 
 APP_PATH = __dirname + '/..'
 PUBLIC_PATH = APP_PATH + '/public'
@@ -48,6 +51,20 @@ serverMain = (req, res) ->
 
 http.createServer(serverMain).listen(constants.HTTP_PORT)
 
+connector = new Connector()
+
 console.log '========================================'
 console.log 'Start wa-wa-war server at ' + constants.HTTP_PORT
 console.log '========================================'
+
+world = new wwwar.World()
+tickWorld = ->
+	world.tick()
+	setTimeout tickWorld, constants.SERVER_TICK_MS
+tickWorld()
+sendSnapshot = ->
+	connector.sendSnapshot world.makeSnapshot()
+	setTimeout sendSnapshot, constants.SERVER_SEND_MS
+sendSnapshot()
+connector.onReceive = (data) ->
+	console.log data

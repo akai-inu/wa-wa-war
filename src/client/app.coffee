@@ -1,23 +1,19 @@
 enchant('next')
 # global objects
 game = null
-time = null
-debugBox = null
 
+###
+# エントリポイント
+###
 window.addEventListener 'load', ->
 	game = new Game GAME_WIDTH, GAME_HEIGHT
 	game.fps = GAME_FPS
 	game.preload RESOURCES
+
+	# キーバインド
+	for key, name of BINDKEYS
+		game.keybind key.charCodeAt(0), name
+
 	game.on 'load', ->
-		time = new Time()
-		debugBox = new DebugBox(@)
-		debugBox.addTime time
-		game.currentScene.addChild time
-		game.currentScene.addChild debugBox
-
-		p = new PlayerOther()
-		game.currentScene.addChild p
-
-		p = new PlayerMe()
-		game.currentScene.addChild p
+		game.replaceScene new SceneTitle()
 	game.start()

@@ -1,59 +1,64 @@
 module.exports = (grunt) ->
 	grunt.initConfig
 		pkg: grunt.file.readJSON 'package.json'
+		version: 'development 0.0.1'
 		path: # 各種フォルダパス、メインファイルパス設定
-			src: __dirname + '/src'
-			development: __dirname + '/development'
-			release: __dirname + '/release'
+			base: __dirname
 
-			srcClient: '<%= path.src %>/client'
-			srcClientLib: '<%= path.srcClient %>/lib'
-			srcPublic: '<%= path.src %>/public'
-			srcPublicVendor: '<%= path.srcPublic %>/vendor'
-			srcPublicImg: '<%= path.srcPublic %>/img'
-			srcServer: '<%= path.src %>/server'
-			srcServerMst: '<%= path.srcServer %>/mst'
-			srcServerLib: '<%= path.srcServer %>/lib'
-			srcSharedLib: '<%= path.src %>/shared-lib'
+			src:
+				base: '<%= path.base %>/src'
+				client: '<%= path.src.base %>/client'
+				clientLib: '<%= path.src.client %>/lib'
+				public: '<%= path.src.base %>/public'
+				publicVendor: '<%= path.src.public %>/vendor'
+				publicImg: '<%= path.src.public %>/img'
+				server: '<%= path.src.base %>/server'
+				serverMst: '<%= path.src.server %>/mst'
+				serverLib: '<%= path.src.server %>/lib'
+				sharedLib: '<%= path.src.base %>/shared-lib'
 
-			devPublic: '<%= path.development %>/public'
-			devPublicVendor: '<%= path.devPublic %>/vendor'
-			devPublicImg: '<%= path.devPublic %>/img'
-			devServer: '<%= path.development %>/server'
-			devServerMst: '<%= path.devServer %>/mst'
-			devServerLib: '<%= path.devServer %>/lib'
+			dev:
+				base: '<%= path.base %>/development'
+				public: '<%= path.dev.base %>/public'
+				publicVendor: '<%= path.dev.public %>/vendor'
+				publicImg: '<%= path.dev.public %>/img'
+				server: '<%= path.dev.base %>/server'
+				serverMst: '<%= path.dev.server %>/mst'
+				serverLib: '<%= path.dev.server %>/lib'
 
-			relPublic: '<%= path.release %>/public'
-			relPublicVendor: '<%= path.relPublic %>/vendor'
-			relPublicImg: '<%= path.relPublic %>/img'
-			relServer: '<%= path.release %>/server'
-			relServerMSt: '<%= path.relServer %>/mst'
-			relServerLib: '<%= path.relServer %>/lib'
+			rel:
+				base: '<%= path.base %>/release'
+				public: '<%= path.rel.base %>/public'
+				publicVendor: '<%= path.rel.public %>/vendor'
+				publicImg: '<%= path.rel.public %>/img'
+				server: '<%= path.rel.base %>/server'
+				serverMSt: '<%= path.rel.server %>/mst'
+				serverLib: '<%= path.rel.server %>/lib'
 
 		coffee:
 			options:
 				bare: true
-			devClient: # クライアントMainとLibとSharedLibをコンパイル
+				separator: '\n// ==============================\n'
+			devClient: # クライアントMain,Lib,SharedLibをコンパイル
 				files: [
-					{ dest: '<%= path.devPublic %>/app.js', src: '<%= path.srcClient %>/*.coffee'}
-					{ dest: '<%= path.devPublic %>/lib.js', src: ['<%= path.srcClientLib %>/*.coffee', '<%= path.srcSharedLib %>/*.coffee']}
+					{ dest: '<%= path.dev.public %>/app.js', src: ['<%= path.src.sharedLib %>/**/*.coffee', '<%= path.src.client %>/*.coffee', '<%= path.src.clientLib %>/*.coffee']}
 				]
 
-			devServer: # サーバMainをコンパイル
+			devServer: # サーバMain,Lib,SharedLibをコンパイル
 				files: [
-					{ dest: '<%= path.devServer %>/app.js', src: '<%= path.srcServer %>/*.coffee'}
+					{ dest: '<%= path.dev.server %>/app.js', src: '<%= path.src.server %>/*.coffee'}
 					{
 						expand: true
-						cwd: '<%= path.srcServerLib %>'
+						cwd: '<%= path.src.serverLib %>'
 						src: '*.coffee'
-						dest: '<%= path.devServerLib %>'
+						dest: '<%= path.dev.serverLib %>'
 						ext: '.js'
 					}
 					{
 						expand: true
-						cwd: '<%= path.srcSharedLib %>'
-						src: '*.coffee'
-						dest: '<%= path.devServerLib %>'
+						cwd: '<%= path.src.sharedLib %>'
+						src: '**/*.coffee'
+						dest: '<%= path.dev.serverLib %>'
 						ext: '.js'
 					}
 				]
@@ -61,67 +66,66 @@ module.exports = (grunt) ->
 		uglify:
 			relClient: # クライアントjsをuglify
 				files: [
-					{ dest: '<%= path.relPublic %>/app.js', src: '<%= path.devPublic %>/app.js'}
-					{ dest: '<%= path.relPublic %>/lib.js', src: '<%= path.devPublic %>/lib.js'}
+					{ dest: '<%= path.rel.public %>/app.js', src: '<%= path.dev.public %>/app.js'}
 				]
 
 		copy:
 			relServer: # サーバMainをコピー
 				files: [
-					{ dest: '<%= path.relServer %>/app.js', src: '<%= path.devServer %>/app.js'}
+					{ dest: '<%= path.rel.server %>/app.js', src: '<%= path.dev.server %>/app.js'}
 				]
 			relServerLib: # サーバLibとSharedLibをコピー
 				files: [
 					expand: true
-					cwd: '<%= path.devServerLib %>'
+					cwd: '<%= path.dev.serverLib %>'
 					src: '*.js'
-					dest: '<%= path.relServerLib %>'
+					dest: '<%= path.rel.serverLib %>'
 					ext: '.js'
 				]
 
 			devMst: # マスタjsonファイルをdevにコピー
 				files: [
 					expand: true
-					cwd: '<%= path.srcServerMst %>'
+					cwd: '<%= path.src.serverMst %>'
 					src: '*.json'
-					dest: '<%= path.devServerMst %>'
+					dest: '<%= path.dev.serverMst %>'
 				]
 			relMst: # マスタjsonファイルをrelにコピー
 				files: [
 					expand: true
-					cwd: '<%= path.devServerMst %>'
+					cwd: '<%= path.dev.serverMst %>'
 					src: '*.json'
-					dest: '<%= path.relServerMst %>'
+					dest: '<%= path.rel.serverMst %>'
 				]
 
 			devVendor: # vendorファイルをdevにコピー
 				files: [
 					expand: true
-					cwd: '<%= path.srcPublicVendor %>'
+					cwd: '<%= path.src.publicVendor %>'
 					src: '**'
-					dest: '<%= path.devPublicVendor %>'
+					dest: '<%= path.dev.publicVendor %>'
 				]
 			relVendor: # vendorファイルをrelにコピー
 				files: [
 					expand: true
-					cwd: '<%= path.devPublicVendor %>'
+					cwd: '<%= path.dev.publicVendor %>'
 					src: '**'
-					dest: '<%= path.relPublicVendor %>'
+					dest: '<%= path.rel.publicVendor %>'
 				]
 
 			devImg: # imgフォルダをdevにコピー
 				files: [
 					expand: true
-					cwd: '<%= path.srcPublicImg %>'
+					cwd: '<%= path.src.publicImg %>'
 					src: '**'
-					dest: '<%= path.devPublicImg %>'
+					dest: '<%= path.dev.publicImg %>'
 				]
 			relImg: # imgフォルダをrelにコピー
 				files: [
 					expand: true
-					cwd: '<%= path.devPublicImg %>'
+					cwd: '<%= path.dev.publicImg %>'
 					src: '**'
-					dest: '<%= path.relPublicImg %>'
+					dest: '<%= path.rel.publicImg %>'
 				]
 
 		jade:
@@ -129,13 +133,13 @@ module.exports = (grunt) ->
 				options:
 					pretty: true
 					data:
-						debug: true
-						timestamp: '<%= grunt.template.today() %>'
+						version: '<%= version %>'
+						timestamp: '<%= grunt.template.today("yyyy-mm-dd HH:MM:ss") %>'
 				files: [
 					expand: true
-					cwd: '<%= path.srcPublic %>'
+					cwd: '<%= path.src.public %>'
 					src: '*.jade'
-					dest: '<%= path.devPublic %>'
+					dest: '<%= path.dev.public %>'
 					ext: '.html'
 				]
 			relPublic: # jadeファイルをrelにコピー
@@ -146,30 +150,30 @@ module.exports = (grunt) ->
 						timestamp: '<%= grunt.template.today() %>'
 				files: [
 					expand: true
-					cwd: '<%= path.srcPublic %>'
+					cwd: '<%= path.src.public %>'
 					src: '*.jade'
-					dest: '<%= path.relPublic %>'
+					dest: '<%= path.rel.public %>'
 					ext: '.html'
 				]
 
 		cssmin:
 			devPublic: # cssファイルをdevにコピー
 				files: [
-					{ dest: '<%= path.devPublic %>/style.css', src: '<%= path.srcPublic %>/*.css'}
+					{ dest: '<%= path.dev.public %>/style.css', src: '<%= path.src.public %>/*.css'}
 				]
 			relPublic: # cssファイルをrelにコピー
 				files: [
-					{ dest: '<%= path.relPublic %>/style.css', src: '<%= path.srcPublic %>/*.css'}
+					{ dest: '<%= path.rel.public %>/style.css', src: '<%= path.src.public %>/*.css'}
 				]
 
 		clean:
 			devClean: # devフォルダを削除
-				'<%= path.development %>'
+				'<%= path.dev.base %>'
 			relClean: # relフォルダを削除
-				'<%= path.release %>'
+				'<%= path.rel.base %>'
 
 		watch:
-			files: ['<%= path.src %>**/*.coffee', '<%= path.src %>**/*.jade', '<%= path.src %>**/*.css']
+			files: ['<%= path.src.base %>**/*.coffee', '<%= path.src.base %>**/*.jade', '<%= path.src.base %>**/*.css']
 			tasks: ['default']
 
 
@@ -227,4 +231,4 @@ module.exports = (grunt) ->
 		'cssmin:relPublic'
 	]
 
-	grunt.registerTask 'default', ['development']
+	grunt.registerTask 'default', ['cleanDevelopment']

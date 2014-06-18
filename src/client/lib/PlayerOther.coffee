@@ -4,4 +4,3 @@ PlayerOther = enchant.Class.create PlayerBase,
 		@x = 100
 
 	move: ->
-		@sprite.y += 1

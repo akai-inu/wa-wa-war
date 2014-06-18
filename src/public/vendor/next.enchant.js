@@ -229,6 +229,13 @@ enchant.next.CollisionManager = enchant.Class.create({
   }
 });
 
+enchant.next.CollisionManager.singleton = function() {
+  if (enchant.next.CollisionManager._instance == null) {
+    enchant.next.CollisionManager._instance = new enchant.next.CollisionManager();
+  }
+  return enchant.next.CollisionManager._instance;
+};
+
 
 /*
  * DebugBox class
@@ -254,20 +261,22 @@ enchant.next.DebugBox = enchant.Class.create(enchant.Group, {
     this.bg.backgroundColor = "rgba(0,0,0,.5)";
     this.bg.width = 0;
     this.bg.height = 0;
+    this.bgw = new enchant.Entity();
+    this.bgw.backgroundColor = "rgba(255,255,255,.3)";
+    this.bgw.width = 0;
+    this.bgw.height = 0;
+    this.addChild(this.bgw);
     this.addChild(this.bg);
     this.addChild(this.text);
-  },
-  addTime: function(time) {
-    this.time = time;
+    scene.addChild(this);
+    this.time = enchant.next.Time.singleton();
   },
   addPermanentText: function(text) {
     this.permanentText.push(text);
   },
   onenterframe: function() {
     var perm, t, w, _i, _len, _ref;
-    if (this.time != null) {
-      t = "FPS : " + this.time.averageFps;
-    }
+    t = "FPS : " + this.time.averageFps;
     if (this.permanentText.length > 0) {
       _ref = this.permanentText;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -281,8 +290,34 @@ enchant.next.DebugBox = enchant.Class.create(enchant.Group, {
     this.bg.x = this.width - w;
     this.bg.width = w;
     this.bg.height = this.text._boundHeight + (this.padding * 2);
+    this.bgw.x = this.width - w;
+    this.bgw.width = w;
+    this.bgw.height = this.text._boundHeight + (this.padding * 2);
   }
 });
+
+enchant.next.DebugBox.singleton = function(scene) {
+  if (scene == null) {
+    scene = null;
+  }
+  if (scene) {
+    enchant.next.DebugBox._instance = new enchant.next.DebugBox(scene);
+  }
+  if (enchant.next.DebugBox._instance == null) {
+    throw 'You need to singleton with scene first.';
+  }
+  return enchant.next.DebugBox._instance;
+};
+
+Math.clamp = function(val, min, max) {
+  if (val > max) {
+    return max;
+  } else if (val < min) {
+    return min;
+  } else {
+    return val;
+  }
+};
 
 
 /*
@@ -315,6 +350,7 @@ enchant.next.LayerManager = enchant.Class.create(function() {
   return {
     initialize: function(scene) {
       this.parentScene = scene;
+      scene.addChild(this);
       this.layers = [];
     },
     addLayer: function(layer) {
@@ -322,6 +358,19 @@ enchant.next.LayerManager = enchant.Class.create(function() {
     }
   };
 });
+
+enchant.next.LayerManager.singleton = function(scene) {
+  if (scene == null) {
+    scene = null;
+  }
+  if (scene) {
+    enchant.next.LayerManager._instance = new enchant.next.LayerManager(scene);
+  }
+  if (enchant.next.LayerManager._instance == null) {
+    throw "You need to singleton with scene first.";
+  }
+  return enchant.next.LayerManager._instance;
+};
 
 
 /*
@@ -380,6 +429,21 @@ enchant.next.Time = enchant.Class.create(enchant.Node, {
   }
 });
 
+enchant.next.Time.singleton = function(fps, updateInterval) {
+  if (fps == null) {
+    fps = -1;
+  }
+  if (updateInterval == null) {
+    updateInterval = -1;
+  }
+  if (fps > 0) {
+    enchant.next.Time._instance = new enchant.next.Time(fps, updateInterval);
+  } else if (enchant.next.Time._instance == null) {
+    enchant.next.Time._instance = new enchant.next.Time();
+  }
+  return enchant.next.Time._instance;
+};
+
 
 /*
  * Vector class
@@ -430,6 +494,9 @@ enchant.next.Vector = enchant.Class.create({
       this._isDirtyDeg = false;
     }
     return this._degree;
+  },
+  toString: function() {
+    return this.x + ", " + this.y;
   }
 });
 
@@ -443,4 +510,16 @@ enchant.next.Vector.toDeg = 57.29577951;
 
 enchant.next.Vector.getDegree = function(radian) {
   return radian * 57.29577951;
+};
+
+enchant.next.Vector.getForward = function(degree) {
+  var radian;
+  radian = enchant.next.Vector.getRadian(degree);
+  return new Vector(Math.cos(radian), Math.sin(radian));
+};
+
+enchant.next.Vector.getLeft = function(degree) {
+  var radian;
+  radian = enchant.next.Vector.getRadian(degree - 90);
+  return new Vector(Math.cos(radian), Math.sin(radian));
 };
