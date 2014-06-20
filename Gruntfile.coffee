@@ -78,7 +78,7 @@ module.exports = (grunt) ->
 				files: [
 					expand: true
 					cwd: '<%= path.dev.serverLib %>'
-					src: '*.js'
+					src: '**/*.js'
 					dest: '<%= path.rel.serverLib %>'
 					ext: '.js'
 				]
@@ -224,6 +224,7 @@ module.exports = (grunt) ->
 		'cleanDevelopment'
 		'uglify:relClient'
 		'copy:relServer'
+		'copy:relServerLib'
 		'copy:relMst'
 		'copy:relVendor'
 		'copy:relImg'
