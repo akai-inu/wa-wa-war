@@ -1,22 +1,18 @@
 SceneTitle = enchant.Class.create enchant.Scene,
 	initialize: ->
 		enchant.Scene.call @
-		console.log window.World.TEST
+		connector = Connector.singleton()
 
-		socket = io 'http://cafe-capy.net:9293'
-		socket.on 'newConnection', (data) ->
-			console.log data
-		socket.on 'snapshot', (data) ->
-			console.log data
-		socket.on 'leaveConnection', (data) ->
-			console.log data
+		connector.getInputFlags = ->
+			flags = 0
+			for key, flag of KEY_FLAGS
+				if game.input[key]? and game.input[key] is true
+					flags += flag
+			return flags
 
-		sendInput = ->
-			socket.emit 'input',
-				left: game.input.left
-				right: game.input.right
-				up: game.input.up
-				down: game.input.down
-			setTimeout sendInput, CLIENT_SEND_MS
-		sendInput()
+		connector.connect()
+		connector.emit PROTOCOL.CS.INIT, 'some client init data.'
 		return
+
+	onenterframe: ->
+		performance.now()

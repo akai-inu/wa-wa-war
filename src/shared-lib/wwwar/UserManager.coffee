@@ -7,19 +7,29 @@ if module?
 
 class UserManager extends LogicBase
 	constructor: ->
-		@users = []
+		@users = {}
 
-	addUser: ->
-		@users.push new User()
+	addUser: (number) ->
+		@users[number] = new User(number)
+
+	removeUser: (number) ->
+		@users[number] = null
+
+	addInput: (number, inputList) ->
+		if !@users[number]?
+			console.log 'Error : No.' + number + ' のユーザは生成されていない'
+			return
+		@users[number].addInput inputList
 
 	tick: ->
-		@users.forEach (user) ->
+		for number, user of @users
 			user.tick()
 
 	makeSnapshot: ->
 		snapshot = []
-		@users.forEach (user) ->
-			snapshot.push user.makeSnapshot()
+		for number, user of @users
+			if user is null then continue
+			snapshot.push [number, user.makeSnapshot()]
 		return snapshot
 
 if module?

@@ -8,9 +8,16 @@ if module?
 class World extends LogicBase
 	constructor: ->
 		@userManager = new UserManager()
-		@userManager.addUser()
-		@userManager.addUser()
 		return
+
+	addUser: (number) ->
+		@userManager.addUser(number)
+
+	removeUser: (number) ->
+		@userManager.removeUser(number)
+
+	addInput: (number, inputList) ->
+		@userManager.addInput number, inputList
 
 	tick: ->
 		@userManager.tick()

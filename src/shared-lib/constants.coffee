@@ -8,9 +8,32 @@
 	define 'TCP_PORT', 9293
 
 	# socket
-	define 'SERVER_TICK_MS', 1000 / 0.5
-	define 'SERVER_SEND_MS', 1000 / 0.5
-	define 'CLIENT_SEND_MS', 1000 / 0.5
+	define 'SOCKET_ADDR', 'http://cafe-capy.net:' + globalobj.TCP_PORT
+	define 'SERVER_TICK_MS', 1000 / 30
+	define 'SERVER_SEND_MS', 1000 / 15
+	define 'CLIENT_SEND_MS', 1000 / 15
+
+	# TCP Protocol Definition
+	define 'PROTOCOL',
+		# socket.io default
+		CORE:
+			CONNECTION: 'connection'
+			DISCONNECTION: 'disconnect'
+
+		# client to server
+		CS:
+			INIT: 100
+			INPUT: 101
+			REQUEST_ALL_SNAPSHOT: 102
+
+		# server to client
+		SC:
+			NEW_CONNECTION: 200
+			LEAVE_CONNECTION: 201
+			REQUEST_INPUT_START: 202
+			REQUEST_INPUT_STOP: 203
+			ALL_SNAPSHOT: 204
+			SNAPSHOT: 205
 
 	# client
 	define 'GAME_FPS', 30
@@ -22,11 +45,21 @@
 	define 'RESOURCES', [
 		'img/player.png'
 	]
-	define 'BINDKEYS',
+	define 'BIND_KEYS',
 		'W': 'W'
 		'S': 'S'
 		'A': 'A'
 		'D': 'D'
 		' ': 'Space'
+	define 'KEY_FLAGS',
+		left:  1 << 0
+		right: 1 << 1
+		up:    1 << 2
+		down:  1 << 3
+		A:     1 << 4
+		D:     1 << 5
+		W:     1 << 6
+		S:     1 << 7
+		Space: 1 << 8
 
 )(if module? then exports else window)

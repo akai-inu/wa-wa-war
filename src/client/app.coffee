@@ -11,9 +11,9 @@ window.addEventListener 'load', ->
 	game.preload RESOURCES
 
 	# キーバインド
-	for key, name of BINDKEYS
+	for key, name of BIND_KEYS
 		game.keybind key.charCodeAt(0), name
 
 	game.on 'load', ->
-		game.replaceScene new SceneTitle()
+		game.replaceScene new SceneMain()
 	game.start()

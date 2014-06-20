@@ -51,20 +51,43 @@ serverMain = (req, res) ->
 
 http.createServer(serverMain).listen(constants.HTTP_PORT)
 
-connector = new Connector()
+world = new wwwar.World()
+allCount = 0
+ondisconnection = ->
+	socket = @
+	console.log 'No.' + socket.no + ': has disconnected.'
+oninput = (data) ->
+	socket = @
+	console.log 'No.' + socket.no + ': input ' + util.inspect(data)
+	world.addInput socket.no, data
+onrequestallsnapshot = (data) ->
+	socket = @
+	console.log 'No.' + socket.no + ': requested all snapshot'
+onconnection = (socket) ->
+	io = @
+	console.log 'No.' + allCount + ': has connected.'
+	socket.no = allCount++
+	world.addUser socket.no
+
+	socket.broadcast.emit constants.PROTOCOL.SC.NEW_CONNECTION, 'No. ' + socket.no + ': has connected.'
+
+	socket.on constants.PROTOCOL.CS.INIT, (data) -> console.log 'No. ' + socket.no + ': ' + data
+	socket.on constants.PROTOCOL.CS.INPUT, oninput
+	socket.on constants.PROTOCOL.CORE.DISCONNECTION, ondisconnection
+	socket.on constants.PROTOCOL.CS.REQUEST_ALL_SNAPSHOT, onrequestallsnapshot
+	socket.emit constants.PROTOCOL.SC.REQUEST_INPUT_START, '1'
+c = Connector.singleton()
+c.connect onconnection
 
 console.log '========================================'
 console.log 'Start wa-wa-war server at ' + constants.HTTP_PORT
 console.log '========================================'
 
-world = new wwwar.World()
 tickWorld = ->
 	world.tick()
 	setTimeout tickWorld, constants.SERVER_TICK_MS
 tickWorld()
 sendSnapshot = ->
-	connector.sendSnapshot world.makeSnapshot()
+	c.emit constants.PROTOCOL.SC.SNAPSHOT, world.makeSnapshot()
 	setTimeout sendSnapshot, constants.SERVER_SEND_MS
 sendSnapshot()
-connector.onReceive = (data) ->
-	console.log data
