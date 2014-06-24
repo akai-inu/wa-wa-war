@@ -5,21 +5,21 @@ if module?
 	constants = require __dirname + '/../constants'
 	LogicBase = require __dirname + '/LogicBase'
 
-class User extends LogicBase
-	constructor: ->
-		@x = constants.GAME_WIDTH / 2
-		@y = constants.GAME_HEIGHT / 2
+class LogicUser extends LogicBase
+	constructor: (@uid) ->
+		@x = 100
+		@y = 100
 		@angle = 0
 		@lastInput = 0
 		@inputBuffer = []
 
-	addInput: (inputArray) ->
-		for input in inputArray
+	applyInput: (inputList) ->
+		for input in inputList
 			@inputBuffer.push input
 
 	tick: ->
 		if @inputBuffer.length is 0
-			# 最終入力の補間
+			# 最終入力を流用
 			@move @lastInput[1]
 		else
 			# 最新入力の追加
@@ -43,11 +43,19 @@ class User extends LogicBase
 		if flags & constants.KEY_FLAGS.S
 			@y += 5
 
-	makeSnapshot: ->
-		return {x: @x, y: @y, angle: @angle}
+	deserialize: (serialized) ->
+		@uid = serialized[0]
+		@x = serialized[1]
+		@y = serialized[2]
+		@angle = serialized[3]
+
+	serialize: ->
+		return [
+			@uid
+			@x
+			@y
+			@angle
+		]
 
 if module?
-	module.exports = User
-else
-	window.wwwar = window.wwwar || {}
-	window.wwwar.User = User
+	module.exports = LogicUser
