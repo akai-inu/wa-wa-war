@@ -1,7 +1,7 @@
 util = require 'util'
-c = require './constants'
+c = require './Constants'
 Logger = require './Logger'
-SnapshotHolder = require './SnapshotHolder'
+snapshot = require('./SnapshotHolder').singleton()
 LogicWorld = require './wwwar/LogicWorld'
 
 class Tick
@@ -23,18 +23,17 @@ class Tick
 		@startTime = process.hrtime()
 		@currentWorld = new LogicWorld()
 		me = @
-		snapshot = SnapshotHolder.singleton()
 		snapshot.generate(me.currentWorld)
 
 		tick = ->
 			tickStartTime = process.hrtime()
-			s = snapshot.getLast()
+			s = snapshot.getLatest()
 			tickTime = process.hrtime(me.startTime)
 			me.tickTime = Math.floor(tickTime[0] * 1000 + tickTime[1] / 1000000)
 			me.elapsedTime = me.tickTime - s[0][1]
 
 			# world tick処理
-			me.currentWorld.tick()
+			me.currentWorld.simulate()
 			me.currentWorld.meta.tickNo = me.currentTick
 			me.currentWorld.meta.tickTime = me.tickTime
 			me.currentWorld.meta.elapsedTime = me.elapsedTime

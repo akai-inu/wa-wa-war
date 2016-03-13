@@ -1,9 +1,9 @@
 # requirement
 util = require 'util'
 io = require 'socket.io'
-c = require './constants'
-PROTOCOL = c.PROTOCOL
+c = require './Constants'
 Logger = require './Logger'
+PROTOCOL = c.PROTOCOL
 tick = require('./Tick').singleton()
 snapshot = require('./SnapshotHolder').singleton()
 
@@ -31,9 +31,9 @@ class SocketServer
 
 		me = @
 		sendSnapshot = ->
-			ss = snapshot.getLast()
+			ss = snapshot.getLatest()
 			if me.nowCount isnt 0 and ss?
-				me.io.emit PROTOCOL.SC.SEND_SNAPSHOT, snapshot.getLast()
+				me.io.emit PROTOCOL.SC.SEND_SNAPSHOT, ss
 			setTimeout sendSnapshot, c.SERVER_SEND_MS
 			return
 		sendSnapshot()
@@ -54,7 +54,7 @@ class SocketServer
 
 		Logger.info 'UID:%s has connected NOW:%s/%s TOTAL:%s', uid, @nowCount, c.LIMIT_CONNECTION, @totalCount
 
-		socket.emit PROTOCOL.SC.INITIAL_DATA, [uid, snapshot.getLast()]
+		socket.emit PROTOCOL.SC.INITIAL_DATA, [uid, snapshot.getLatest()]
 
 		# イベントハンドラ設定
 		socket.on PROTOCOL.CORE.DISCONNECTION, =>

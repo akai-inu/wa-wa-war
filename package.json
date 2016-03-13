@@ -4,7 +4,7 @@
   "description": "2D Online War game",
   "scripts": {
     "start": "NODE_ENV=release node release/server/app.js",
-    "test": "grunt && NODE_ENV=development node development/server/app.js"
+    "test": "grunt && NODE_ENV=development node --debug development/server/app.js"
   },
   "repository": {
     "type": "git",
@@ -27,6 +27,7 @@
     "grunt-newer": "*"
   },
   "dependencies": {
-    "socket.io": "*"
+    "socket.io": "*",
+    "underscore": "~1.6.0"
   }
 }

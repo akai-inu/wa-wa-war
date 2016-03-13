@@ -1,7 +1,7 @@
 ###
 # Wa-Wa-War Logic UserManager Class
 ###
-if module?
+if require?
 	Logger = require __dirname + '/../Logger'
 	LogicBase = require __dirname + '/LogicBase'
 	LogicUser = require __dirname + '/LogicUser'
@@ -59,6 +59,4 @@ class LogicUserManager extends LogicBase
 		super()
 		return
 
-
-if module?
-	module.exports = LogicUserManager
+module.exports = LogicUserManager if module?

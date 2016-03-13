@@ -1,29 +1,51 @@
 SceneMain = enchant.Class.create enchant.Scene,
 	initialize: ->
 		enchant.Scene.call @
+		@backgroundColor = '#fff'
 		@users = {}
-
-		# 入力フラグの取得メソッド作成
-		if !game.input.getInputFlags?
-			game.input.getInputFlags = ->
-				flags = 0
-				for key, flag of KEY_FLAGS
-					if game.input[key]? and game.input[key] is true
-						flags += flag
-				return flags
-
-		me = @
+		@logic = null # 現在動いているロジックツリー
 		socketManager = SocketManager.singleton()
-		socketManager.oninitialdata = (data) ->
+		ss = SnapshotHolder.singleton()
+		me = @
+
+		# 現在の入力フラグを取得
+		@getInputFlags = ->
+			flags = 0
+			for key, flag of KEY_FLAGS
+				if game.input[key]? and game.input[key] is true
+					flags += flag
+			return flags
+
+		# SC.INITIAL_DATA 受信時のコールバック設定
+		socketManager.onInitialData = (data) ->
 			me.uid = data[0]
+			ss.add data[1]
+			me.logic = new LogicWorld()
+			me.logic.interpolate ss.getLatest(), ss.getLatest(), 0
+			Logger.debug 'uid = ' + me.uid + ', snapshot = ' + ss.getLatest()
 			return
-		socketManager.onsendsnapshot = (snapshot) ->
+
+		# SC.SEND_SNAPSHOT 受信時のコールバック設定
+		socketManager.onSendSnapshot = (snapshot) ->
+			ss.add snapshot
+			Logger.debug 'tickNo = ' + ss.getLatestMeta()[0]
 			return
+
+		# ソケット開始
 		socketManager.start()
+
+		# Tick処理
 		tick = ->
-			socketManager.addBuffer game.input.getInputFlags()
+			latestMeta = ss.getLatestMeta()
+			ssNo = if latestMeta? then latestMeta[0] else 0
+			elapsed = ss.getCalculatedServerTime
+
+			# 送信内容をバッファに追加
+			socketManager.addBuffer [ssNo, elapsed, me.getInputFlags()]
 			setTimeout tick, TICK_MS
 			return
+
+		# CS.SEND_INPUT 処理
 		sendInput = ->
 			socketManager.sendInput()
 			setTimeout sendInput, CLIENT_SEND_MS

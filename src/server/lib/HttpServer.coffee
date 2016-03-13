@@ -1,5 +1,5 @@
 fs = require 'fs'
-c = require './constants'
+c = require './Constants'
 Logger = require './Logger'
 
 APP_PATH = __dirname + '/../..'

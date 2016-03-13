@@ -1,8 +1,9 @@
 ###
 # Wa-Wa-War Logic User Class
 ###
-if module?
-	constants = require __dirname + '/../constants'
+if require?
+	c = require __dirname + '/../Constants'
+	KEY_FLAGS = c.KEY_FLAGS
 	LogicBase = require __dirname + '/LogicBase'
 
 class LogicUser extends LogicBase
@@ -29,18 +30,18 @@ class LogicUser extends LogicBase
 			@inputBuffer = []
 
 	move: (flags) ->
-		if flags & constants.KEY_FLAGS.left
+		if flags & KEY_FLAGS.left
 			@angle -= 5
-		if flags & constants.KEY_FLAGS.right
+		if flags & KEY_FLAGS.right
 			@angle += 5
 
-		if flags & constants.KEY_FLAGS.A
+		if flags & KEY_FLAGS.A
 			@x -= 5
-		if flags & constants.KEY_FLAGS.D
+		if flags & KEY_FLAGS.D
 			@x += 5
-		if flags & constants.KEY_FLAGS.W
+		if flags & KEY_FLAGS.W
 			@y -= 5
-		if flags & constants.KEY_FLAGS.S
+		if flags & KEY_FLAGS.S
 			@y += 5
 
 	deserialize: (serialized) ->
@@ -57,5 +58,4 @@ class LogicUser extends LogicBase
 			@angle
 		]
 
-if module?
-	module.exports = LogicUser
+module.exports = LogicUser if module?

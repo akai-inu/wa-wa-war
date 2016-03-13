@@ -1,5 +1,4 @@
-if module?
-	util = require 'util'
+if require?
 	LogicBase = require './LogicBase'
 
 class LogicMeta extends LogicBase
@@ -23,5 +22,4 @@ class LogicMeta extends LogicBase
 			@elapsedTime
 		]
 
-if module?
-	module.exports = LogicMeta
+module.exports = LogicMeta if module?

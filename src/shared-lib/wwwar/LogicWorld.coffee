@@ -1,7 +1,7 @@
 ###
 # Wa-Wa-War Logic World Data Class
 ###
-if module?
+if require?
 	LogicBase = require __dirname + '/LogicBase'
 	LogicMeta = require __dirname + '/LogicMeta'
 	LogicUserManager = require __dirname + '/LogicUserManager'
@@ -15,5 +15,4 @@ class LogicWorld extends LogicBase
 		@add @userManager
 		return
 
-if module?
-	module.exports = LogicWorld
+module.exports = LogicWorld if module?

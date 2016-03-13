@@ -1,12 +1,13 @@
 ###
 # Wa-Wa-War Logic Base Class
 ###
-if module?
+if require?
 	Logger = require __dirname + '/../Logger'
 
 class LogicBase
 	constructor: ->
 		@elements = []
+		@parent = null
 		@isServer = module?
 		return
 
@@ -14,6 +15,7 @@ class LogicBase
 	add: (logic) ->
 		if !logic.add?
 			Logger.error '%s Invalid Elements detected when adding Logic elements', @constructor.name
+		logic.parent = @
 		@elements.push logic
 		return @
 
@@ -27,30 +29,36 @@ class LogicBase
 		return
 
 	# サーバ上のロジック更新処理
-	tick: ->
+	simulate: ->
 		if !@isServer
-			console.log 'client can\'t use #tick'
+			Logger.error 'client can\'t use #simulate'
 			return
 		for c, i in @elements
-			c.tick()
+			c.simulate()
 		return
 
-	# serializedデータをインスタンス変数に展開(クライアント用)
-	deserialize: (serialized) ->
-		for c, i in @elements
-			c.deserialize(serialized[i])
-
-	# インスタンス変数をserialize(サーバ用)
-	serialize: ->
-		if !@isServer
-			console.log 'client can\'t use #serialize'
+	# 2スナップショットのデータを元にデータを補間
+	interpolate: (ssPrev, ssNext, elapsed) ->
+		if lerpVal >= 1.0
+			for c, i in @elements
+				c.extrapolate ssPrev, ssNext
 			return
 
+		for c, i in @elements
+			c.interpolate ssPrev, ssNext, lerpVal
+		return
+
+	extrapolate: (ssPrev, ssNext) ->
+		for c, i in @elements
+			c.extrapolate ssPrev, ssNext
+		return
+
+	# インスタンス変数をserialize
+	serialize: ->
 		serialized = []
 		for c, i in @elements
 			if c?
 				serialized.push c.serialize()
 		return serialized
 
-if module?
-	module.exports = LogicBase
+module.exports = LogicBase if module?
